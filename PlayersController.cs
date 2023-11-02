@@ -15,21 +15,11 @@ public class PlayersController : MonoBehaviour
     public bool isJumping = false; 
 
 
-    //run forward
-    private Vector3 initialPosition;
-    private float angle = 0.0f;
-
-    public float forwardSpeed = 1.0f;
-    public float radius = 5.0f; //radius of the circle
-     
-
-
-
 
     // Start is called before the first frame update
     void Start()
     {
-        initialPosition = transform.position; //run forward 
+
         
     }
 
@@ -45,28 +35,31 @@ public class PlayersController : MonoBehaviour
     void Update()
     {
          horizontalInput = Input.GetAxis("Horizontal");
-        transform.Translate(Vector3.right * horizontalInput * speed * Time.deltaTime);
+        transform.localPosition += Vector3.right * horizontalInput * speed * Time.deltaTime;
 
-         //Keep player within the bounds 
-        if (transform.position.x < xRangeMin){
-            transform.position = new Vector3(xRangeMin, transform.position.y, transform.position.z);
-        } else if (transform.position.x > xRangeMax){
-            transform.position = new Vector3(xRangeMax, transform.position.y, transform.position.z);
-        } 
+        if(transform.localPosition.x < xRangeMin)
+        {
+            transform.localPosition = new Vector3(xRangeMin, transform.localPosition.y, transform.localPosition.z); 
+        }
+        else if(transform.localPosition.x > xRangeMax)
+        {
+            transform.localPosition = new Vector3(xRangeMax, transform.localPosition.y, transform.localPosition.z);
+        }
+         
+         //Keep player within the bounds         
+        // if (transform.position.x < xRangeMin){
+        //     transform.position = new Vector3(xRangeMin, transform.position.y, transform.position.z );
+            
+        // } else if (transform.position.x > xRangeMax){
+        //     transform.position = new Vector3(xRangeMax, transform.position.y, transform.position.z);
+        // } 
 
-        //run forward
-        // Calculate the new position along the circular path
-        angle += forwardSpeed * Time.deltaTime;
-        float x = Mathf.Cos(angle) * radius;
-        float z = Mathf.Sin(angle) * radius;
-        Vector3 newPosition = initialPosition + new Vector3(x, 0, z);
 
-        // Move the player to the new position
-        transform.position = newPosition;
-
+    
 
         //jump
-       isJumping = Physics.Raycast(transform.position, Vector3.down, 0.1f); //check if player is on the ground
+       isJumping = Physics.Raycast(transform.position, Vector3.down, 1); //check if player is on the ground
+        Debug.DrawRay(transform.position, transform.TransformDirection(Vector3.down) * 10f, Color.yellow);
         //check for spacebar press
          if (Input.GetKeyDown(KeyCode.Space) && !isJumping){
             Jump();

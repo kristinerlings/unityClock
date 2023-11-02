@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class RotateClockHandles : MonoBehaviour
 {
+   // private RigidBody playerRb;
    // public GameObject turnHandle;
     public float rotationSpeedHour = 30.0f; 
     public float rotationSpeedMinute = 6.0f;
@@ -14,6 +15,8 @@ public class RotateClockHandles : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        //playerRb = GetComponent<Rigidbody>(); 
+       // playerRb.AddForce()
         
     }
 
