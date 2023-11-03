@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using TMPro;
 
 public class StarManager : MonoBehaviour
 { 
@@ -9,121 +8,92 @@ public class StarManager : MonoBehaviour
     //[SerializeField] 
     
      public GameObject starPrefab; // remember to check if it exists later
-    //private List<GameObject> stars = new List<GameObject>(); //create list of stars
-     public List<GameObject> stars;
-    /*
+     private List<GameObject> stars = new List<GameObject>(); //create list of stars
+     /*
     items.Add(GameObject);
     items.Remove(GameObject);
     items.Count;
     items.Clear();
     */
-    //public TextMeshProUGUI winnerText;  
-    //public TextMeshProUGUI scoreText;
+     public int nrStars = 5; //number of stars
 
     private GameObject currentStar = null;
-    private int score;
 
     public float xRangeMin = 3.5f;  
     public float xRangeMax = 7.5f;  
     private float angleMax = 360.0f; 
-
-    //time
-   // private float spawnRate = 1.0f;
+    private int score = 0;
 
     //winner
-    public Camera winnerCamera; 
+    public GameObject winnerScreen = null;
+    private Win winScreenScript = null; 
    
 
     void Awake()
     {
-        // Create 5 stars - random locations
-       // for (int i = 0; i < 5; i++)
-       // {
-            float randomAngle = Random.Range(0.0f, angleMax); // Generate a random angle within the specified range
-            float randomRad = randomAngle * Mathf.Deg2Rad;
-            float x = angleMax * Mathf.Cos(randomRad);
-            float z = angleMax * Mathf.Sin(randomRad);
-
-
-
-            Vector3 starPosition = new Vector3(x, 0.0f, z);
-            GameObject star = Instantiate(starPrefab, starPosition, Quaternion.identity); //create a star
-            star.SetActive(false);
-            stars.Add(star); //add star to the list
-            Debug.Log("Star created at: " + starPosition);
-       // }
-
-        // Assign the first star to active and to the currentStar variable
-         if (stars.Count > 0)
+        if(starPrefab == null)
         {
-            currentStar = stars[0];
-            currentStar.SetActive(true);
-        } 
-        // fill list with stars
-        // position those stars when creating them
-        // Set all stars created to inactive except for the first one
-        // assign the first one to the currenstar variable
-    }
-    
-    private void OnTriggerEnter(Collider other){
-      
-    //  currentStar.SetActive(false);
-      Debug.Log("Star set to FALSE");
-    }
-    
-
-    void Start(){
-        //StartCoroutine(SpawnStars());
-        score = 0;
-        scoreText.text = "Score: " + score;
-    }
-
-/*     IEnumerator SpawnStars(){
-        while(true){
-            yield return new WaitForSeconds(spawnRate);
-            float randomAngle = Random.Range(0.0f, angleMax); // Generate a random angle within the specified range
-            float randomRad = randomAngle * Mathf.Deg2Rad;
-            float x = angleMax * Mathf.Cos(randomRad);
-            float z = angleMax * Mathf.Sin(randomRad);
-       
-    }} */
-
-    void Update()
-    {
-        if(stars.Count == 0){
-            //If the list is empty, game win
-            //call whatever when game is over: e.g. camera animation, game over screen, etc.
-            Debug.Log("Game Win");
-            winnerCamera.enabled = true;
-            winnerText.gameObject.SetActive(true); 
-
+            Debug.LogError("Star prefab is not assigned!");
             return;
         }
 
-        //if star is a valid object and isn't active, 
-        //then destroy from list(JSarray), increase score, put currentStar to the next star in the list (last one in the list)
-        // destroy and pop (remove from list back)
-        // Set the new currentsStar to active
-         if (currentStar != null && !currentStar.activeSelf)
+        if(winnerScreen != null)
         {
-            Debug.Log("Star destroyed");
-            Destroy(currentStar);
-            stars.Remove(currentStar);
-            score++;
-            Debug.Log("Score: " + score);
+            winScreenScript = winnerScreen.GetComponent<Win>();
+        }
 
-            if (stars.Count > 0)
-            {
-                int nextStarIndex = stars.Count - 1; // Index of the next star in the list
-                currentStar = stars[nextStarIndex];
-                currentStar.SetActive(true);
-                Debug.Log("New CurrentStar set");
-            }
-            else
-            {
-                currentStar = null; // No more stars left in the list
-                Debug.Log("No more stars left");
-            }
+        // Create stars - random locations
+        for (int i = 0; i < nrStars; i++)
+        {
+            float randomAngle = Random.Range(0.0f, angleMax) * Mathf.Deg2Rad; // Generate a random angle within the specified range
+            float randomRadius = Random.Range(xRangeMin, xRangeMax); // Generate a random radius within the specified range
+
+            float x = randomRadius * Mathf.Cos(randomAngle);
+            float z = randomRadius * Mathf.Sin(randomAngle);
+
+            GameObject star = Instantiate(starPrefab); //create a star
+            star.transform.position = new Vector3(x, transform.position.y, z); //set the position of the star
+            star.SetActive(false);
+            stars.Add(star); //add star to the list
+        }
+
+        // Assign the first star to active and to the currentStar variable
+        UpdateStar();
     }
-}
+
+    void Update()
+    {
+        if(currentStar == null)
+        {
+            return;
+        }
+
+        if(!currentStar.activeSelf)
+        {
+            UpdateStar();
+            score++;
+        }  
+    }
+
+    void UpdateStar()
+    {
+        if(currentStar != null)
+        {
+            stars.Remove(currentStar);
+            Destroy(currentStar);
+        }
+
+        // Get next star if the list is not empty
+        if(stars.Count > 0)
+        {
+            currentStar = stars[0];
+            currentStar.SetActive(true);
+        }
+        else
+        {
+            // Show winscreen
+            winScreenScript.UpdateScore(score);
+            winScreenScript.Show();
+        }
+    }
 }
