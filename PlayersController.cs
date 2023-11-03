@@ -14,13 +14,16 @@ public class PlayersController : MonoBehaviour
     public float jumpForce = 10.0f;
     public bool isJumping = false; 
 
+    //animate jump
+    public Animator playerAnim; 
+
+
 
 
     // Start is called before the first frame update
     void Start()
     {
-
-        
+        playerAnim = GetComponent<Animator>();
     }
 
     void Jump(){
@@ -28,8 +31,13 @@ public class PlayersController : MonoBehaviour
             //add force to the player
             isJumping = true;
             GetComponent<Rigidbody>().AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
-        }
+             playerAnim.SetBool("Jump_b", true); 
+           
+        } 
     }
+    
+
+
 
     // Update is called once per frame
     void Update()
@@ -55,15 +63,23 @@ public class PlayersController : MonoBehaviour
         // } 
 
 
-    
+
+        //if not jumping, set to false
+        playerAnim.SetBool("Jump_b", false); 
 
         //jump
-       isJumping = Physics.Raycast(transform.position, Vector3.down, 1); //check if player is on the ground
+        isJumping = Physics.Raycast(transform.position, Vector3.down, 1); //check if player is on the ground
         Debug.DrawRay(transform.position, transform.TransformDirection(Vector3.down) * 10f, Color.yellow);
         //check for spacebar press
          if (Input.GetKeyDown(KeyCode.Space) && !isJumping){
             Jump();
+    
         }
         
+
+        //Game over:
+        //gameOver = true;
+        //playerAnim.SetBool("Death_b", true);
     }
+
 }
