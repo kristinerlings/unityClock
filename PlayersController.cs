@@ -17,6 +17,8 @@ public class PlayersController : MonoBehaviour
     //animate jump
     public Animator playerAnim; 
 
+    public bool allowControl = true;
+
 
 
 
@@ -35,13 +37,14 @@ public class PlayersController : MonoBehaviour
            
         } 
     }
-    
-
-
 
     // Update is called once per frame
     void Update()
-    {
+    {  
+        if (allowControl == false){
+            return;
+        }
+         if(allowControl){
          horizontalInput = Input.GetAxis("Horizontal");
         transform.localPosition += Vector3.right * horizontalInput * speed * Time.deltaTime;
 
@@ -76,7 +79,7 @@ public class PlayersController : MonoBehaviour
     
         }
         
-
+    }
         //Game over:
         //gameOver = true;
         //playerAnim.SetBool("Death_b", true);

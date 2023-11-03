@@ -45,6 +45,7 @@ public class GameOver : MonoBehaviour
         //death
         playersControllerScript.playerAnim.SetBool("Death_b", true);
         playersControllerScript.playerAnim.SetInteger("DeathType_int", 1);
-        playersControllerScript.jumpForce = 0f; 
+        //playersControllerScript.jumpForce = 0f; 
+        playersControllerScript.allowControl = false; //stop player from moving
     }
 }
