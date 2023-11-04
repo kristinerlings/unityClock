@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI; //interact with ui 
 
 public class Win : MonoBehaviour
 {
@@ -17,6 +19,7 @@ public class Win : MonoBehaviour
 
     //winner
     public Camera winnerCamera; 
+    public Button restartButton;
 
 
     
@@ -62,6 +65,10 @@ public class Win : MonoBehaviour
         
 
         //GameObject.FindWithTag("ClockHand").SetActive(false); //handles disappear
+    }
+
+    public void RestartTheGame(){
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
     public void UpdateScore(int newScore)
