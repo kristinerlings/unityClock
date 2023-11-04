@@ -3,18 +3,19 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using UnityEngine.SceneManagement;
-using UnityEngine.UI; //interact with ui 
+using UnityEngine.UI;
 
 public class GameOver : MonoBehaviour
 {
     private PlayersController playersControllerScript;
     private Rotate rotatePlayer = null;
+
+    // Get all obj. with tag ClockHand
     private List<Rotate> clockRotateList = new List<Rotate>();
 
     public Camera gameoverCamera; 
     public TextMeshProUGUI gameOverText;
 
-    //ui button restart game
     public Button restartButton;
 
 
@@ -28,8 +29,8 @@ public class GameOver : MonoBehaviour
         {
             clockRotateList.Add(clockHand.GetComponent<Rotate>());
         }
-        restartButton.gameObject.SetActive(true); //show restart button
-        gameOverText.gameObject.SetActive(false); //hide game over text
+        restartButton.gameObject.SetActive(true); 
+        gameOverText.gameObject.SetActive(false); 
      } 
 
 
@@ -41,7 +42,6 @@ public class GameOver : MonoBehaviour
 
     public void Show()
     {
-        //TODO: Game over 
         gameObject.SetActive(true);
 
         // Stop movement
@@ -51,15 +51,14 @@ public class GameOver : MonoBehaviour
             clockRotate.rotationSpeed = 0f;
         }
 
-        // - CHANGE CAMERA - GAME OVER SCREEN - START AGAIN
+        // GameOver screen
         gameoverCamera.enabled = true;
-        gameOverText.gameObject.SetActive(true); //show game over text
+        gameOverText.gameObject.SetActive(true);
         
             
-        //death
+        // Animation - player
         playersControllerScript.playerAnim.SetBool("Death_b", true);
         playersControllerScript.playerAnim.SetInteger("DeathType_int", 1);
-        //playersControllerScript.jumpForce = 0f; 
         playersControllerScript.allowControl = false; //stop player from moving
        
     }

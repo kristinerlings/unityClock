@@ -8,7 +8,7 @@ public class StarHit : MonoBehaviour
     {
         if(other.tag == "Player")
         {
-            gameObject.SetActive(false);       
+            gameObject.SetActive(false);      
         }
     }
 }

@@ -4,25 +4,26 @@ using UnityEngine;
 
 public class StarManager : MonoBehaviour
 { 
-    //https://hub.packtpub.com/arrays-lists-dictionaries-unity-3d-game-development/
-    //[SerializeField] 
     
-     public GameObject starPrefab; // remember to check if it exists later
+     public GameObject starPrefab; //create a star
      private List<GameObject> stars = new List<GameObject>(); //create list of stars
+     private AudioSource audioSource;
+     public AudioClip starSound;
      /*
     items.Add(GameObject);
     items.Remove(GameObject);
     items.Count;
     items.Clear();
     */
-     public int nrStars = 5; //number of stars
+     public int nrStars = 5; 
 
     private GameObject currentStar = null;
 
     public float xRangeMin = 3.5f;  
     public float xRangeMax = 7.5f;  
-    private float angleMax = 360.0f; 
-    private int score = 0;
+    private float rotationMax = 360.0f; 
+    public int score = 0;
+    private PlayersController playersControllerScript;
 
     //winner
     public GameObject winnerScreen = null;
@@ -31,69 +32,71 @@ public class StarManager : MonoBehaviour
 
     void Awake()
     {
-        if(starPrefab == null)
-        {
+        playersControllerScript = GameObject.Find("Player").GetComponent<PlayersController>();
+        audioSource = GetComponent<AudioSource>();
+        if(starPrefab == null){
             Debug.LogError("Star prefab is not assigned!");
             return;
         }
 
-        if(winnerScreen != null)
-        {
+        if(winnerScreen != null){
             winScreenScript = winnerScreen.GetComponent<Win>();
         }
 
         // Create stars - random locations
-        for (int i = 0; i < nrStars; i++)
-        {
-            float randomAngle = Random.Range(0.0f, angleMax) * Mathf.Deg2Rad; // Generate a random angle within the specified range
-            float randomRadius = Random.Range(xRangeMin, xRangeMax); // Generate a random radius within the specified range
+        for (int i = 0; i < nrStars; i++){
+            // Generate random position (angle + radius) within specific range
+            float randomAngle = Random.Range(0.0f, rotationMax) * Mathf.Deg2Rad; 
+            float randomRadius = Random.Range(xRangeMin, xRangeMax);
 
             float x = randomRadius * Mathf.Cos(randomAngle);
             float z = randomRadius * Mathf.Sin(randomAngle);
 
-            GameObject star = Instantiate(starPrefab); //create a star
-            star.transform.position = new Vector3(x, transform.position.y, z); //set the position of the star
+            //Create star, set position and add to list
+            GameObject star = Instantiate(starPrefab);
+            star.transform.position = new Vector3(x, transform.position.y, z);
             star.SetActive(false);
-            stars.Add(star); //add star to the list
+            stars.Add(star); 
         }
 
-        // Assign the first star to active and to the currentStar variable
         UpdateStar();
+   
     }
 
     void Update()
     {
-        if(currentStar == null)
-        {
+        if(currentStar == null){
             return;
         }
 
-        if(!currentStar.activeSelf)
-        {
+        if(!currentStar.activeSelf){
             UpdateStar();
             score++;
+            Debug.Log("Score: " + score);
+            audioSource.PlayOneShot(starSound, 1.0f);
+            playersControllerScript.scoreText.text = "Stars: " + score + "/" + nrStars;
         }  
+        
     }
 
     void UpdateStar()
-    {
-        if(currentStar != null)
-        {
+    {  // Hide/destroy current star
+        if(currentStar != null){
             stars.Remove(currentStar);
             Destroy(currentStar);
         }
 
         // Get next star if the list is not empty
-        if(stars.Count > 0)
-        {
+        if(stars.Count > 0){
             currentStar = stars[0];
             currentStar.SetActive(true);
         }
-        else
-        {
-            // Show winscreen
-            winScreenScript.UpdateScore(score);
-            winScreenScript.Show();
+        //  empty = WINNER
+        else{
+           playersControllerScript.scoreText.text = "Stars: " + score + "/" + nrStars;
+           winScreenScript.Show();
+           audioSource.PlayOneShot(starSound, 1.0f);
         }
     }
+
 }

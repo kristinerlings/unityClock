@@ -8,7 +8,7 @@ using UnityEngine.UI; //interact with ui
 public class Win : MonoBehaviour
 {
     public TextMeshProUGUI winnerText;  
-    public TextMeshProUGUI scoreText; //not sure I want here - take away later
+    //public TextMeshProUGUI scoreText; //not sure I want here - take away later
 
     //reference other scripts:
     private PlayersController playersControllerScript;
@@ -27,7 +27,7 @@ public class Win : MonoBehaviour
     {
         winnerCamera.enabled = false;
         winnerText.gameObject.SetActive(false); //hide game over text
-        scoreText.gameObject.SetActive(false);
+       // scoreText.gameObject.SetActive(false);
 
         playersControllerScript = GameObject.Find("Player").GetComponent<PlayersController>(); 
 
@@ -47,7 +47,7 @@ public class Win : MonoBehaviour
     {
         winnerCamera.enabled = true;
         winnerText.gameObject.SetActive(true); //hide game over text
-        scoreText.gameObject.SetActive(true);
+        //scoreText.gameObject.SetActive(true);
        
         playersControllerScript.allowControl = false; //stop player
         // idle animation 
@@ -71,8 +71,8 @@ public class Win : MonoBehaviour
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
-    public void UpdateScore(int newScore)
+    /* public void UpdateScore(int newScore)
     {
         scoreText.text = "Score: " + newScore;
-    }
+    } */
 }

@@ -1,9 +1,16 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI; //interact with ui 
 
 public class PlayersController : MonoBehaviour
 {
+    public TextMeshProUGUI scoreText;
+    private StarManager starManagerScript;
+
+
    // Player movement 
     public float horizontalInput;
     public float speed = 10.0f;
@@ -19,6 +26,11 @@ public class PlayersController : MonoBehaviour
 
     public bool allowControl = true;
 
+    // Audio
+    private AudioSource audioSource;
+    public AudioClip jumpSound;
+
+
 
 
 
@@ -26,6 +38,11 @@ public class PlayersController : MonoBehaviour
     void Start()
     {
         playerAnim = GetComponent<Animator>();
+        audioSource = GetComponent<AudioSource>();
+       
+        //Get nr of stars from StarManager
+        starManagerScript = GameObject.Find("StarSpawnManager").GetComponent<StarManager>();
+        scoreText.text = "Stars: 0/" + starManagerScript.nrStars;
     }
 
     void Jump(){
@@ -33,10 +50,13 @@ public class PlayersController : MonoBehaviour
             //add force to the player
             isJumping = true;
             GetComponent<Rigidbody>().AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
-             playerAnim.SetBool("Jump_b", true); 
+            playerAnim.SetBool("Jump_b", true); 
+            audioSource.PlayOneShot(jumpSound, 1.0f);
            
         } 
     }
+
+  
 
     // Update is called once per frame
     void Update()
@@ -44,45 +64,33 @@ public class PlayersController : MonoBehaviour
         if (allowControl == false){
             return;
         }
-         if(allowControl){
-         horizontalInput = Input.GetAxis("Horizontal");
-        transform.localPosition += Vector3.right * horizontalInput * speed * Time.deltaTime;
-
-        if(transform.localPosition.x < xRangeMin)
-        {
-            transform.localPosition = new Vector3(xRangeMin, transform.localPosition.y, transform.localPosition.z); 
-        }
-        else if(transform.localPosition.x > xRangeMax)
-        {
-            transform.localPosition = new Vector3(xRangeMax, transform.localPosition.y, transform.localPosition.z);
-        }
-         
-         //Keep player within the bounds         
-        // if (transform.position.x < xRangeMin){
-        //     transform.position = new Vector3(xRangeMin, transform.position.y, transform.position.z );
-            
-        // } else if (transform.position.x > xRangeMax){
-        //     transform.position = new Vector3(xRangeMax, transform.position.y, transform.position.z);
-        // } 
-
-
-
-        //if not jumping, set to false
-        playerAnim.SetBool("Jump_b", false); 
-
-        //jump
-        isJumping = Physics.Raycast(transform.position, Vector3.down, 1); //check if player is on the ground
-        Debug.DrawRay(transform.position, transform.TransformDirection(Vector3.down) * 10f, Color.yellow);
-        //check for spacebar press
-         if (Input.GetKeyDown(KeyCode.Space) && !isJumping){
-            Jump();
-    
-        }
         
-    }
-        //Game over:
-        //gameOver = true;
-        //playerAnim.SetBool("Death_b", true);
-    }
+        if(allowControl){
+            horizontalInput = Input.GetAxis("Horizontal");
+            transform.localPosition += Vector3.right * horizontalInput * speed * Time.deltaTime;
 
+            if(transform.localPosition.x < xRangeMin)
+            {
+                transform.localPosition = new Vector3(xRangeMin, transform.localPosition.y, transform.localPosition.z); 
+            }
+            else if(transform.localPosition.x > xRangeMax)
+            {
+                transform.localPosition = new Vector3(xRangeMax, transform.localPosition.y, transform.localPosition.z);
+            }
+
+            //if not jumping, set to false
+            playerAnim.SetBool("Jump_b", false); 
+
+            //jump
+            isJumping = Physics.Raycast(transform.position, Vector3.down, 1); //check if player is on the ground
+            //Debug.DrawRay(transform.position, transform.TransformDirection(Vector3.down) * 10f, Color.yellow);
+            
+            //check for spacebar press
+            if (Input.GetKeyDown(KeyCode.Space) && !isJumping){
+                Jump();
+        
+            }
+        
+        }
+    }
 }
